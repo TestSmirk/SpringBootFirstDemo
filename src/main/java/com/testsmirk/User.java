@@ -3,24 +3,14 @@ package com.testsmirk;
 import org.springframework.data.annotation.Id;
 
 public class User {
-    @Id
-    private Long id;
     private String username;
     private Integer age;
 
-    public User(Long id, String username, Integer age) {
-        this.id = id;
+    public User( String username, Integer age) {
         this.username = username;
         this.age = age;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
