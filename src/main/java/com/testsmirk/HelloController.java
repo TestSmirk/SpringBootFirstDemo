@@ -1,7 +1,13 @@
 package com.testsmirk;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import sun.rmi.runtime.Log;
 
 /**
  * Created by testsmirk on 17-1-27.
@@ -20,6 +26,23 @@ public class HelloController {
         userRepository.findByUsername(name);
         return userRepository.findByUserid(name);
     }
+
+    @Configuration
+    public class CORSConfiguration {
+        @Bean
+        public WebMvcConfigurer corsConfigurer() {
+            return new WebMvcConfigurerAdapter() {
+                @Override
+                public void addCorsMappings(CorsRegistry registry) {
+                    registry.addMapping("/**")
+                            .allowedHeaders("*")
+                            .allowedMethods("*")
+                            .allowedOrigins("*");
+                }
+            };
+        }
+    }
+
     //查询
     @RequestMapping(value = "getuser", method = RequestMethod.GET)
     public User getUser(@RequestParam(value = "id") String id) {
@@ -35,5 +58,13 @@ public class HelloController {
         String _id = String.format(ObjId, id);
         System.out.print(_id);
         return userRepository.findAllExceptId(_id);
+    }
+
+    @RequestMapping(value = {"/login"}, method = RequestMethod.POST ,params = {"username"})
+    public User login(@RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+        System.out.printf("username+ " + username + " password" + password);
+        User user = new User(username, password);
+        userRepository.save(user);
+        return user;
     }
 }

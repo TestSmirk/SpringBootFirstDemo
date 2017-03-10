@@ -5,12 +5,25 @@ import org.springframework.data.annotation.Id;
 public class User {
     private String username;
     private Integer age;
+    private String password;
 
-    public User( String username, Integer age) {
+    public User(String username, Integer age) {
         this.username = username;
         this.age = age;
     }
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getUsername() {
         return username;
