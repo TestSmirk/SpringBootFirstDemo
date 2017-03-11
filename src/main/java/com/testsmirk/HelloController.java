@@ -60,8 +60,8 @@ public class HelloController {
         return userRepository.findAllExceptId(_id);
     }
 
-    @RequestMapping(value = {"/login"}, method = RequestMethod.POST ,params = {"username"})
-    public User login(@RequestParam(value = "username") String username, @RequestParam(value = "password") String password) {
+    @RequestMapping(value = {"/login"}, method = RequestMethod.POST )
+    public User login(@PathVariable(value = "username") String username, @PathVariable(value = "password") String password) {
         System.out.printf("username+ " + username + " password" + password);
         User user = new User(username, password);
         userRepository.save(user);

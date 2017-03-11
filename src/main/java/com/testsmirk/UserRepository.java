@@ -11,13 +11,10 @@ import java.util.List;
  * Created by Smirk on 2017/3/4.
  */
 public interface UserRepository extends MongoRepository<User,Long>{
-    @Query("{'username':?0}")
     User findByUsername(String name);
 
 
-    @Query("{'id':{'$ne':?0}}")
     User findAllExceptId(String id);
 
-    @Query("{'_id':?0}")
     User findByUserid(String name);
 }
