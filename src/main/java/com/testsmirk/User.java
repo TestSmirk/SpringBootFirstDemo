@@ -1,8 +1,8 @@
 package com.testsmirk;
 
-import org.springframework.data.annotation.Id;
+import com.testsmirk.model.ErrorModel;
 
-public class User {
+public class User  {
     private String username;
     private Integer age;
     private String password;
@@ -15,6 +15,10 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public User() {
+
     }
 
     public String getPassword() {

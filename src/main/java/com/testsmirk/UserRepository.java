@@ -10,11 +10,8 @@ import java.util.List;
 /**
  * Created by Smirk on 2017/3/4.
  */
-public interface UserRepository extends MongoRepository<User,Long>{
+public interface UserRepository extends MongoRepository<User, Long> {
     User findByUsername(String name);
 
 
-    User findAllExceptId(String id);
-
-    User findByUserid(String name);
 }
