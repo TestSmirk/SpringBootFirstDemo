@@ -74,7 +74,7 @@ public class HelloController {
     )
     {
 
-        return null;
+        return true;
     }
 
     @RequestMapping(value = {"/regist"}, method = RequestMethod.POST)
@@ -94,13 +94,6 @@ public class HelloController {
             }
         }
         return new ErrorModel();
-//        if (false) {
-//            User user = new User(username, password);
-//            userRepository.save(user);
-//            MessageModel messageModel = new MessageModel();
-//            messageModel.setMessage("success");
-//            messageModel.setCode(1);
-//            return messageModel;
-//        }
+
     }
 }
