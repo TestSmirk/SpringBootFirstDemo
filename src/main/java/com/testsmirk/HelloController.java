@@ -70,9 +70,12 @@ public class HelloController {
     @RequestMapping(value = {"/login"}, method = {RequestMethod.POST})
     private Object login(
             @RequestParam(name = "username") String username,
-            @RequestParam(name = "password") String passwrod
+            @RequestParam(name = "password") String password
+
     )
+
     {
+        logger.debug(username + "  " + password);
 
         return true;
     }
@@ -82,6 +85,7 @@ public class HelloController {
 
         if (userRepository.findByUsername(username) != null) {
             return new ErrorModel("用户已存在", 2);
+
 
         } else {
             if (!TextUtil.isEmpty(username) && !TextUtil.isEmpty(password)) {
