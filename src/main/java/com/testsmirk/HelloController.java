@@ -63,8 +63,9 @@ public class HelloController {
     @RequestMapping(value = {"del_hello"}, method = RequestMethod.DELETE)
     public User delHello(@RequestParam(value = "id") String id) {
         String _id = String.format(ObjId, id);
-        System.out.print(_id);
+
         return null;
+
     }
 
     @RequestMapping(value = {"/login"}, method = {RequestMethod.POST})

@@ -27,4 +27,5 @@ public class GirlProperties {
     public void setAgel(Integer age) {
         this.age = age;
     }
+
 }
