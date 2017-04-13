@@ -94,11 +94,15 @@ public class HelloController {
                 userRepository.save(user);
                 MessageModel messageModel = new MessageModel();
                 messageModel.setMessage("success");
-                messageModel.setCode(1);
+                messageModel.setCode(getCode());
                 return messageModel;
             }
         }
         return new ErrorModel();
 
+    }
+
+    private int getCode() {
+        return 0;
     }
 }
