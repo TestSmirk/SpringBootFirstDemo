@@ -236,6 +236,8 @@ public Object getGroupDetail(){
 
     @RequestMapping(value = {"/getRoom"},method = RequestMethod.GET)
     public Object getRoom(){
+
+
         ArrayList<RoomModel> rooms = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             RoomModel e = new RoomModel();
