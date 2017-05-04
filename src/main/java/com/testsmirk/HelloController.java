@@ -8,6 +8,8 @@ import com.testsmirk.model.ErrorModel;
 import com.testsmirk.model.MessageModel;
 import com.testsmirk.model.friend.FriendModel;
 import com.testsmirk.model.friend.NewFriend;
+import com.testsmirk.model.room.GroupDetailModel;
+import com.testsmirk.model.room.MemberModel;
 import com.testsmirk.model.room.RoomModel;
 import com.testsmirk.utils.Images;
 import com.testsmirk.utils.Strings;
@@ -207,7 +209,30 @@ public class HelloController {
         return 0;
     }
 
+@RequestMapping(value = {"/getGroupDetail"})
+public Object getGroupDetail(){
+    GroupDetailModel groupDetailModel = new GroupDetailModel();
+    groupDetailModel.setGroupArea("河南省  洛阳市");
+    groupDetailModel.setGroupGrade("四年级三班");
+    groupDetailModel.setGroupIcon(Utils.getImages(Images.images));
+    groupDetailModel.setGroupID("443965");
+    groupDetailModel.setGroupMyName("张小花");
+    groupDetailModel.setGroupSchool("洛阳外国语学院");
+    ArrayList<MemberModel>memberModels = new ArrayList<>();
+    for (int i = 0; i < 40; i++) {
+    MemberModel memberModel = new MemberModel();
+    memberModel.setId("1000"+1);
+        memberModel.setImagePic(Utils.getImages());
+        memberModel.setLevel(i%3);
+        memberModel.setName(Utils.getName());
+        memberModel.setSign(Utils.randomRound(0,3)+"");
+        memberModels.add(memberModel);
+    }
 
+    groupDetailModel.setMemberModel(memberModels);
+    return groupDetailModel;
+
+}
 
     @RequestMapping(value = {"/getRoom"},method = RequestMethod.GET)
     public Object getRoom(){

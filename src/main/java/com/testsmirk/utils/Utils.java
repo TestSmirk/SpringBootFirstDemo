@@ -13,6 +13,18 @@ public class Utils {
 
     public static String getName(String[] names) {
 
+
         return names[randomRound(0,names.length)];
     }
+    public static String getName(){
+        return getName(Strings.NAMES);
+    }
+    public static String getImages(String[] images) {
+
+        return images[randomRound(0,images.length)];
+    }
+    public static String getImages(){
+        return getImages(Images.images);
+    }
 }
+
