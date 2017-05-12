@@ -1,7 +1,10 @@
 package com.testsmirk.model;
 
 
+import com.testsmirk.model.room.CommentModel;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by testsmirk on 2017/4/24.
@@ -9,6 +12,16 @@ import java.util.ArrayList;
 
 public class ClassmateModel   {
     private int gender;
+
+    private List<CommentModel> commentModels;
+
+    public List<CommentModel> getCommentModels() {
+        return commentModels;
+    }
+
+    public void setCommentModels(List<CommentModel> commentModels) {
+        this.commentModels = commentModels;
+    }
 
     public int getGender() {
         return gender;

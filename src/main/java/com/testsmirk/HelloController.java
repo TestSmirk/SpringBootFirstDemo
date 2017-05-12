@@ -8,6 +8,7 @@ import com.testsmirk.model.ErrorModel;
 import com.testsmirk.model.MessageModel;
 import com.testsmirk.model.friend.FriendModel;
 import com.testsmirk.model.friend.NewFriend;
+import com.testsmirk.model.room.CommentModel;
 import com.testsmirk.model.room.GroupDetailModel;
 import com.testsmirk.model.room.MemberModel;
 import com.testsmirk.model.room.RoomModel;
@@ -67,12 +68,6 @@ public class HelloController {
     //查询
     @RequestMapping(value = "getuser", method = RequestMethod.GET)
     public User getUser(@RequestParam(value = "id") String id) {
-
-        MongoClientURI uri = new MongoClientURI(
-                "mongodb://TestSmirk:573384562dsa@cluster0-shard-00-00-cgmli.mongodb.net:27017,cluster0-shard-00-01-cgmli.mongodb.net:27017,cluster0-shard-00-02-cgmli.mongodb.net:27017/knowledge?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin");
-
-        MongoClient mongoClient = new MongoClient(uri);
-        MongoDatabase database = mongoClient.getDatabase("test");
         System.out.println(id);
         return null;
 
@@ -153,7 +148,14 @@ public class HelloController {
                     urls.add("http://i1.kym-cdn.com/photos/images/masonry/001/026/682/528.jpg");
                     break;
             }
-
+            List<CommentModel> commentModels =new ArrayList<>();
+            for (int j = 0; j < 20; j++) {
+                CommentModel e = new CommentModel();
+                e.setContent("评论问的额二位请问 "+i);
+                e.setFromName("名字 "+i);
+                commentModels.add(e);
+            }
+            classmateModel.setCommentModels(commentModels);
             classmateModel.setImageUrl(urls);
             list.add(classmateModel);
         }
