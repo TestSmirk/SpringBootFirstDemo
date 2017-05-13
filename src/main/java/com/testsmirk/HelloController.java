@@ -71,6 +71,9 @@ public class HelloController {
         System.out.println(id);
         return null;
 
+
+
+
     }
 
     private String ObjId = "ObjectId(\"%s\")";
@@ -80,6 +83,7 @@ public class HelloController {
     @RequestMapping(value = {"del_hello"}, method = RequestMethod.DELETE)
     public User delHello(@RequestParam(value = "id") String id) {
         String _id = String.format(ObjId, id);
+        userRepository.save(new User(id,id));
 
         return null;
 

@@ -3,3 +3,7 @@ server:
 girl:
  cupSize: B
  age: 18
+spring:
+  data:
+    mongodb:
+      uri: mongodb://@seaof-153-125-234-209.jp-tokyo-11.arukascloud.io/test
