@@ -13,6 +13,16 @@ import java.util.List;
 public class ClassmateModel   {
     private int gender;
 
+    public String getToppicTitle() {
+        return toppicTitle;
+    }
+
+    public void setToppicTitle(String toppicTitle) {
+        this.toppicTitle = toppicTitle;
+    }
+
+    private String toppicTitle;
+
     private List<CommentModel> commentModels;
 
     public List<CommentModel> getCommentModels() {
