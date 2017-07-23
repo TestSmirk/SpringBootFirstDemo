@@ -59,6 +59,7 @@ public class HelloController {
                     registry.addMapping("/**")
                             .allowedHeaders("*")
                             .allowedMethods("*")
+
                             .allowedOrigins("*");
                 }
             };
@@ -109,6 +110,9 @@ public class HelloController {
 
             ClassmateModel classmateModel = new ClassmateModel();
             classmateModel.setTime(System.currentTimeMillis()+"");
+            String name = Utils.getName(Strings.CONTENTS);
+            classmateModel.setToppicTitle(name.substring(0,name.length()/2
+            ));
             classmateModel.setName(Utils.getName(Strings.NAMES));
             classmateModel.setComCount(2);
             classmateModel.setGender( (((int) (Math.random() * 10))%2));
