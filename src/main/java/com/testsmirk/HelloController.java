@@ -53,6 +53,8 @@ public class HelloController {
     public class CORSConfiguration {
         @Bean
         public WebMvcConfigurer corsConfigurer() {
+
+            //this is allow all remote client to access
             return new WebMvcConfigurerAdapter() {
                 @Override
                 public void addCorsMappings(CorsRegistry registry) {
