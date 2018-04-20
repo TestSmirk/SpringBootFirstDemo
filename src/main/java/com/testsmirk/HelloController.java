@@ -5,6 +5,7 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 import com.testsmirk.model.ClassmateModel;
 import com.testsmirk.model.ErrorModel;
+import com.testsmirk.model.GiftsModel;
 import com.testsmirk.model.MessageModel;
 import com.testsmirk.model.friend.FriendModel;
 import com.testsmirk.model.friend.NewFriend;
@@ -12,6 +13,8 @@ import com.testsmirk.model.room.CommentModel;
 import com.testsmirk.model.room.GroupDetailModel;
 import com.testsmirk.model.room.MemberModel;
 import com.testsmirk.model.room.RoomModel;
+import com.testsmirk.queue.PrintTask;
+import com.testsmirk.queue.TaskQueue;
 import com.testsmirk.utils.Images;
 import com.testsmirk.utils.Strings;
 import com.testsmirk.utils.TextUtil;
@@ -26,6 +29,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,19 +41,64 @@ import java.util.Random;
  */
 @RestController
 public class HelloController {
+    private String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+            if(ip.equals("127.0.0.1")){
+                //根据网卡取本机配置的IP
+                InetAddress inet=null;
+                try {
+                    inet = InetAddress.getLocalHost();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                ip= inet.getHostAddress();
+            }
+        }
+        // 多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+        if(ip != null && ip.length() > 15){
+            if(ip.indexOf(",")>0){
+                ip = ip.substring(0,ip.indexOf(","));
+            }
+        }
+        return ip;
+    }
     @Autowired
     private GirlProperties girlProperties;
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(value = {"/hello", "/hi"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/hello", "/hi"}, method ={RequestMethod.POST,RequestMethod.GET})
     public User say(@RequestParam(value = "name") String name, @RequestParam(value = "age") int age) {
         System.out.println("HelloController.say " + name + "   age " + age);
-        userRepository.save(new User(name, age));
+        User s = new User(name, age);
+        userRepository.save(s);
         userRepository.findByUsername(name);
-        return null;
+
+        TaskQueue taskQueue = new TaskQueue(1);
+        taskQueue.start();
+
+        for (int i = 0; i < 10; i++) {
+            PrintTask printTask = new PrintTask(i);
+            taskQueue.add(printTask);
+        }
+        return s;
     }
 
+    @RequestMapping(value = "/statisic")
+    public User statisic(){
+        System.out.println("statisic " );
+
+
+        return new User("smirk",-1);
+    }
     @Configuration
     public class CORSConfiguration {
         @Bean
@@ -75,18 +125,32 @@ public class HelloController {
         return null;
 
 
-
-
     }
+    //192.168.3.116
 
     private String ObjId = "ObjectId(\"%s\")";
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @RequestMapping(value = {"getGift"})
+    public Object getGift() {
+        GiftsModel giftsModel = new GiftsModel();
+        giftsModel.setCode(200);
+        giftsModel.setResult(true);
+        ArrayList<GiftsModel.EntitiesBean> gifts = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            GiftsModel.EntitiesBean entities = new GiftsModel.EntitiesBean("", i, "", i, "icon $i", "i $i", "i $i", "i $i", 10.0);
+
+            gifts.add(entities);
+        }
+        giftsModel.setEntities(gifts);
+        return giftsModel;
+    }
+
     @RequestMapping(value = {"del_hello"}, method = RequestMethod.DELETE)
     public User delHello(@RequestParam(value = "id") String id) {
         String _id = String.format(ObjId, id);
-        userRepository.save(new User(id,id));
+        userRepository.save(new User(id, id));
 
         return null;
 
@@ -111,14 +175,14 @@ public class HelloController {
         for (int i = 0; i < 10; i++) {
 
             ClassmateModel classmateModel = new ClassmateModel();
-            classmateModel.setTime(System.currentTimeMillis()+"");
+            classmateModel.setTime(System.currentTimeMillis() + "");
             String name = Utils.getName(Strings.CONTENTS);
-            classmateModel.setToppicTitle(name.substring(0,name.length()/2
+            classmateModel.setToppicTitle(name.substring(0, name.length() / 2
             ));
             classmateModel.setName(Utils.getName(Strings.NAMES));
             classmateModel.setComCount(2);
-            classmateModel.setGender( (((int) (Math.random() * 10))%2));
-            classmateModel.setHeadImage(Images.images[Utils.randomRound(0,Images.images.length)]);
+            classmateModel.setGender((((int) (Math.random() * 10)) % 2));
+            classmateModel.setHeadImage(Images.images[Utils.randomRound(0, Images.images.length)]);
             classmateModel.setContent(Utils.getName(Strings.CONTENTS));
             ArrayList<String> urls = new ArrayList<>();
             switch (i) {
@@ -158,11 +222,11 @@ public class HelloController {
                     urls.add("http://i1.kym-cdn.com/photos/images/masonry/001/026/682/528.jpg");
                     break;
             }
-            List<CommentModel> commentModels =new ArrayList<>();
+            List<CommentModel> commentModels = new ArrayList<>();
             for (int j = 0; j < 20; j++) {
                 CommentModel e = new CommentModel();
-                e.setContent("评论问的额二位请问 "+i);
-                e.setFromName("名字 "+i);
+                e.setContent("评论问的额二位请问 " + i);
+                e.setFromName("名字 " + i);
                 commentModels.add(e);
             }
             classmateModel.setCommentModels(commentModels);
@@ -179,12 +243,12 @@ public class HelloController {
         List<FriendModel> list = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             FriendModel friendModel = new FriendModel();
-            friendModel.setDate(System.currentTimeMillis()+"");
+            friendModel.setDate(System.currentTimeMillis() + "");
             friendModel.setHeadImage(Images.images[i]);
-            friendModel.setFriendAddCouse(i%3);
-            friendModel.setName("this is name "+i);
-            friendModel.setFromContent("早上啊是滴噢接啊温江区了拉我去"+i);
-            friendModel.setFromName("from name " +i);
+            friendModel.setFriendAddCouse(i % 3);
+            friendModel.setName("this is name " + i);
+            friendModel.setFromContent("早上啊是滴噢接啊温江区了拉我去" + i);
+            friendModel.setFromName("from name " + i);
             friendModel.setUnReadMessage(i);
             list.add(friendModel);
         }
@@ -221,44 +285,44 @@ public class HelloController {
         return 0;
     }
 
-@RequestMapping(value = {"/getGroupDetail"})
-public Object getGroupDetail(){
-    GroupDetailModel groupDetailModel = new GroupDetailModel();
-    groupDetailModel.setGroupArea("河南省  洛阳市");
-    groupDetailModel.setGroupGrade("四年级三班");
-    groupDetailModel.setGroupIcon(Utils.getImages(Images.images));
-    groupDetailModel.setGroupID("443965");
-    groupDetailModel.setGroupMyName("张小花");
-    groupDetailModel.setGroupSchool("洛阳外国语学院");
-    ArrayList<MemberModel>memberModels = new ArrayList<>();
-    for (int i = 0; i < 40; i++) {
-    MemberModel memberModel = new MemberModel();
-    memberModel.setId("1000"+1);
-        memberModel.setImagePic(Utils.getImages());
-        memberModel.setLevel(i%3);
-        memberModel.setName(Utils.getName());
-        memberModel.setSign(Utils.randomRound(0,3)+"");
-        memberModels.add(memberModel);
+    @RequestMapping(value = {"/getGroupDetail"})
+    public Object getGroupDetail() {
+        GroupDetailModel groupDetailModel = new GroupDetailModel();
+        groupDetailModel.setGroupArea("河南省  洛阳市");
+        groupDetailModel.setGroupGrade("四年级三班");
+        groupDetailModel.setGroupIcon(Utils.getImages(Images.images));
+        groupDetailModel.setGroupID("443965");
+        groupDetailModel.setGroupMyName("张小花");
+        groupDetailModel.setGroupSchool("洛阳外国语学院");
+        ArrayList<MemberModel> memberModels = new ArrayList<>();
+        for (int i = 0; i < 40; i++) {
+            MemberModel memberModel = new MemberModel();
+            memberModel.setId("1000" + 1);
+            memberModel.setImagePic(Utils.getImages());
+            memberModel.setLevel(i % 3);
+            memberModel.setName(Utils.getName());
+            memberModel.setSign(Utils.randomRound(0, 3) + "");
+            memberModels.add(memberModel);
+        }
+
+        groupDetailModel.setMemberModel(memberModels);
+        return groupDetailModel;
+
     }
 
-    groupDetailModel.setMemberModel(memberModels);
-    return groupDetailModel;
-
-}
-
-    @RequestMapping(value = {"/getRoom"},method = RequestMethod.GET)
-    public Object getRoom(){
+    @RequestMapping(value = {"/getRoom"}, method = RequestMethod.GET)
+    public Object getRoom() {
 
 
         ArrayList<RoomModel> rooms = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             RoomModel e = new RoomModel();
             e.setCount(i);
-            e.setFromContent(Strings.CONTENTS[Utils.randomRound(0,Strings.CONTENTS.length)]);
-            e.setFromName(Strings.NAMES[Utils.randomRound(0,Strings.NAMES.length)]);
-            e.setImage(Images.images[Utils.randomRound(0,Images.images.length)]);
-            e.setName(Strings.NAMES[Utils.randomRound(0,Strings.NAMES.length)]);
-            e.setUnReadCount((int) (Math.random()*10));
+            e.setFromContent(Strings.CONTENTS[Utils.randomRound(0, Strings.CONTENTS.length)]);
+            e.setFromName(Strings.NAMES[Utils.randomRound(0, Strings.NAMES.length)]);
+            e.setImage(Images.images[Utils.randomRound(0, Images.images.length)]);
+            e.setName(Strings.NAMES[Utils.randomRound(0, Strings.NAMES.length)]);
+            e.setUnReadCount((int) (Math.random() * 10));
             rooms.add(e);
         }
         return rooms;

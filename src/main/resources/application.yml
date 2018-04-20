@@ -3,7 +3,7 @@ spring:
     active: dev
   data:
     mongodb:
-      host: xx
+      host: smirk.cc
       port: 27017
       database: test
 server:
