@@ -43,6 +43,7 @@ public class HelloController {
     public User say(@RequestParam(value = "name") String name, @RequestParam(value = "age") int age) {
         System.out.println("HelloController.say " + name + "   age " + age);
         userRepository.save(new User(name, age));
+        
         userRepository.findByUsername(name);
         return null;
     }
